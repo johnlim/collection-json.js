@@ -1,20 +1,22 @@
 var assert = require("assert")
 var _ = require("underscore")
-var convert = function(cj){
-	var x = _.omit(cj, 'prompt');
-	var key = x["name"];
-	var value = x["value"];
-	var y = {};
-	y[key] = value;
-	return y;
+
+var convert = function(dataArray){
+	var data = {}
+	for (i = 0; i < dataArray.length; i++){
+		var x = _.omit(dataArray[i], 'prompt');
+		var key = x["name"];
+		var value = x["value"];
+		data[key] = value;
+	}
+	return data;
 }
 
 var marshallCjItems = function(cj) {
 	var itemArray = cj["collection"]["items"];
 	return itemArray;
-
-
 }
+
 var marshallCjData = function(cj) {
 	var dataArray = [];
 	var items = cj["collection"]["items"]
@@ -38,7 +40,7 @@ var format = function(cj) {
 	var extract = marshallCjData(cj);
 
 	if (extract.length > 0) {
-		return convert(extract[0]);
+		return convert(extract);
 	}
 	return extract;
 }
@@ -144,7 +146,7 @@ describe('marshallCjData', function(){
 
 describe('Convert', function() {
 	it('should return key value pair', function(){
-		var cj =  {"name" : "Current", "value" : false, "prompt" : "Current"};
+		var cj =  [{"name" : "Current", "value" : false, "prompt" : "Current"}];
 		//assert.equal({Current: false, "Effective Date" :'2014/12/01', Position: 'President', By: 'Richard Hatton', Updated: "2014/12/01" }, convert(cj));
 //            assert.ok(false);
 //            assert.ok( _.isEqual({name: "Current", value: false}, convert(cj)));
@@ -165,7 +167,7 @@ describe('When given valid Cj with no items child property', function() {
 	})
 })
 
-describe('When given valid Cj with no data child property in items', function() {
+describe('When given valid Cj with 1 items iand no data child property', function() {
 	var cj = { "collection" :
 	{
 		"version" : "1.0",
@@ -200,7 +202,30 @@ describe('when given valid Cj with 1 item and 1 data', function() {
 		}
 		}
 
-		assert.ok(_.isEqual({Current: false}, format(cj)));
+		assert.ok(_.isEqual({"Current": false}, format(cj)));
+	})
+})
+
+describe('when given valid Cj with 1 item and 2 data', function() {
+	it('should return key value pair', function(){
+		var cj = { "collection" :
+		{
+			"version" : "1.0",
+			"href" : "http://example.org/friends/",
+			"items" : [
+				{
+					"href" : "http://example.org/friends/jdoe",
+					"data" : [
+						{"name" : "Current", "value" : false, "prompt" : "Current"},
+						{"name" : "Effective Date", "value": "2014/12/01", "prompt" : "Effective Date"}
+					],
+					"links" : [ ]
+				}
+			]
+		}
+		}
+
+		assert.ok(_.isEqual({"Current": false, "Effective Date": "2014/12/01" }, format(cj)));
 	})
 })
 
