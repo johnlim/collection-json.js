@@ -21,13 +21,11 @@ var marshallCjData = function(cj) {
 	var dataArray = [];
 	var items = cj["collection"]["items"]
 	try {
-		if (items && items.length > 0) {
 			for (i = 0; i < items.length; i++) {
 				for (j = 0; j < items[i]["data"].length; j++) {
 					dataArray[j] = items[i]["data"][j];
 				}
 			}
-		}
 	}
 	catch(err) {
 		dataArray = [];
@@ -277,6 +275,8 @@ describe('When given valid Cj with 2 items and does not contain data child prope
 		assert.ok(_.isEqual([], format(cj)));
 	})
 })
+
+
 /*
  "data" : [
  {"name" : "Current", "value" : false, "prompt" : "Current"},
