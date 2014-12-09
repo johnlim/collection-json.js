@@ -3,7 +3,7 @@ var _ = require("underscore")
 
 var convert = function(dataArray){
 	var data = {}
-	for (i = 0; i < dataArray.length; i++){
+	for (var i = 0; i < dataArray.length; i++){
 		var x = _.omit(dataArray[i], 'prompt');
 		var key = x["name"];
 		var value = x["value"];
@@ -276,7 +276,35 @@ describe('When given valid Cj with 2 items and does not contain data child prope
 	})
 })
 
+describe.only('When given valid Cj with 2 items and 1 data each', function() {
+	it('should return empty array', function(){
+		var cj = { "collection" :
+		{
+			"version" : "1.0",
+			"href" : "http://example.org/friends/",
+			"items" : [
+				{
+					"href" : "http://example.org/friends/jdoe",
+					"data" : [
+						{"name" : "Current", "value" : false, "prompt" : "Current"}
+					],
+					"links" : [ ]
+				},
+				{
+					"href" : "http://example.org/friends/jdoe",
+					"data" : [
+						{"name" : "Current", "value" : true, "prompt" : "Current"}
+					],
+					"links" : [ ]
+				}
+			]
+		}
+		}
 
+		//assert.ok(_.isEqual([{"Current": false}, {"Current": true}], format(cj)));
+		assert.equal([{"Current": false}, {"Current": true}], format(cj));
+	})
+})
 /*
  "data" : [
  {"name" : "Current", "value" : false, "prompt" : "Current"},
