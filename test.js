@@ -167,7 +167,7 @@ describe('When given valid Cj with no items child property', function() {
 	})
 })
 
-describe('When given valid Cj with 1 items iand no data child property', function() {
+describe('When given valid Cj with 1 items and no data child property', function() {
 	var cj = { "collection" :
 	{
 		"version" : "1.0",
@@ -184,7 +184,7 @@ describe('When given valid Cj with 1 items iand no data child property', functio
 	})
 })
 
-describe('when given valid Cj with 1 item and 1 data', function() {
+describe('When given valid Cj with 1 item and 1 data', function() {
 	it('should return key value pair', function(){
 		var cj = { "collection" :
 		{
@@ -206,7 +206,7 @@ describe('when given valid Cj with 1 item and 1 data', function() {
 	})
 })
 
-describe('when given valid Cj with 1 item and 2 data', function() {
+describe('When given valid Cj with 1 item and 2 data', function() {
 	it('should return key value pair', function(){
 		var cj = { "collection" :
 		{
@@ -229,16 +229,54 @@ describe('when given valid Cj with 1 item and 2 data', function() {
 	})
 })
 
+describe('When given valid Cj with 2 items and 0 data', function() {
+	it('should return empty array', function(){
+		var cj = { "collection" :
+		{
+			"version" : "1.0",
+			"href" : "http://example.org/friends/",
+			"items" : [
+				{
+					"href" : "http://example.org/friends/jdoe",
+					"links" : [ ]
+				},
+				{
+					"href" : "uri",
+					"links" : [ ]
+				}
+			]
+		}
+		}
 
-//describe('Array', function(){
-//  describe('#indexOf()', function(){
-//      it('should return -1 when the value is not present', function(){
-//            assert.equal(-1, [1,2,3].indexOf(5));
-//            assert.equal(-1, [1,2,3].indexOf(1));
-//          })
-//    })
-//})
+		assert.ok(_.isEqual([], format(cj)));
+	})
+})
 
+describe('When given valid Cj with 2 items and does not contain data child property in all items', function() {
+	it('should return empty array', function(){
+		var cj = { "collection" :
+		{
+			"version" : "1.0",
+			"href" : "http://example.org/friends/",
+			"items" : [
+				{
+					"href" : "http://example.org/friends/jdoe",
+					"data" : [
+						{"name" : "Current", "value" : false, "prompt" : "Current"}
+					],
+					"links" : [ ]
+				},
+				{
+					"href" : "http://example.org/friends/jdoe",
+					"links" : [ ]
+				}
+			]
+		}
+		}
+
+		assert.ok(_.isEqual([], format(cj)));
+	})
+})
 /*
  "data" : [
  {"name" : "Current", "value" : false, "prompt" : "Current"},
