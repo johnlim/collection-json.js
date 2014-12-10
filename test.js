@@ -1,15 +1,33 @@
 var assert = require("assert")
 var _ = require("underscore")
 
-var convert = function(dataArray){
-	var data = {}
-	for (var i = 0; i < dataArray.length; i++){
-		var x = _.omit(dataArray[i], 'prompt');
+var extracto = function(dataSet) {
+	var data = {};
+	for (var j = 0; j < dataSet.length; j++) {
+		var x = _.omit(dataSet[j], 'prompt');
 		var key = x["name"];
 		var value = x["value"];
 		data[key] = value;
 	}
 	return data;
+};
+
+
+var convert = function(dataArray){
+	var john = [];
+	var data = {};
+	for (var i = 0; i < dataArray.length; i++){
+		//for (var j = 0; j < dataArray[i].length; j++) {
+		//	var x = _.omit(dataArray[i][j], 'prompt');
+		//	var key = x["name"];
+		//	var value = x["value"];
+		//	data[key] = value;
+		data = extracto(dataArray[i]);
+		//}
+		john.push(data);
+	}
+	//return data;
+	return john;
 }
 
 var marshallCjItems = function(cj) {
@@ -17,22 +35,27 @@ var marshallCjItems = function(cj) {
 	return itemArray;
 }
 
+var extract = function(items) {
+	var dataArray = [];
+	for (var j = 0; j < items["data"].length; j++) {
+		dataArray[j] = items["data"][j];
+	}
+	return dataArray;
+};
+
 var marshallCjData = function(cj) {
 	var dataArray = [];
-	var items = cj["collection"]["items"]
+	var items = cj["collection"]["items"];
 	try {
-			for (i = 0; i < items.length; i++) {
-				for (j = 0; j < items[i]["data"].length; j++) {
-					dataArray[j] = items[i]["data"][j];
-				}
+			for (var i = 0; i < items.length; i++) {
+				dataArray.push(extract(items[i]));
 			}
 	}
 	catch(err) {
 		dataArray = [];
 	}
 	return dataArray;
-
-}
+};
 
 var format = function(cj) {
 	var extract = marshallCjData(cj);
@@ -43,113 +66,113 @@ var format = function(cj) {
 	return extract;
 }
 
-describe('marshallCjData', function(){
-	describe('when given valid CJ with 0 items', function() {
-		var cj = { "collection" :
-		{
-			"version" : "1.0",
-			"href" : "http://example.org/friends/",
-
-			"items" : [
-			]
-		}
-		}
-		it('should return empty array', function() {
-			assert.ok(_.isEqual([], marshallCjData(cj)));
-		})
-	})
-
-	describe('when given valid CJ with 1 item and 1 data', function() {
-		var cj = { "collection" :
-		{
-			"version" : "1.0",
-			"href" : "http://example.org/friends/",
-
-			"items" : [
-				{
-					"href" : "http://example.org/friends/jdoe",
-					"data" : [
-						{"name" : "full-name", "value" : "J. Doe", "prompt" : "Full Name"},
-					],
-				}
-			]
-		}
-		}
-		it('should be able to extract the data', function(){
-			assert.ok( _.isEqual({"name" : "full-name", "value" : "J. Doe", "prompt" : "Full Name"}, marshallCjData(cj)[0]));
-
-		})
-
-	})
-
-	describe('when given valid Cj with 1 items and 2 data', function() {
-		var cj = { "collection" :
-		{
-			"version" : "1.0",
-			"href" : "http://example.org/friends/",
-
-			"items" : [
-				{
-					"href" : "http://example.org/friends/jdoe",
-					"data" : [
-						{"name" : "full-name", "value" : "J. Doe", "prompt" : "Full Name"},
-						{"name" : "email", "value" : "J@Doe", "prompt" : "Email"},
-					],
-				}
-			]
-		}
-		}
-		it('should extract 2 sets of data', function() {
-			assert.equal(marshallCjData(cj).length, 2);
-			assert.ok( _.isEqual({"name" : "full-name", "value" : "J. Doe", "prompt" : "Full Name"}, marshallCjData(cj)[0]));
-			assert.ok( _.isEqual({"name" : "email", "value" : "J@Doe", "prompt" : "Email"}, marshallCjData(cj)[1]));
-
-		})
-
-	})
-
-	describe('when given valid Cj with 2 items and 1 data set each', function() {
-		var cj = { "collection" :
-		{
-			"version" : "1.0",
-			"href" : "http://example.org/friends/",
-
-			"items" : [
-				{
-					"href" : "http://example.org/friends/jdoe",
-					"data" : [
-						{"name" : "full-name", "value" : "J. Doe", "prompt" : "Full Name"},
-					],
-				},
-
-				{
-					"href" : "http://example.org/friends/johnlim",
-					"data" : [
-						{"name" : "full-name", "value" : "John Lim ", "prompt" : "Full Name"},
-					],
-				}
-			]
-		}
-		}
-		it('should extract 2 sets of items', function() {
-			assert.equal(marshallCjItems(cj).length, 2);
-			//assert.ok( _.isEqual({"name" : "full-name", "value" : "J. Doe", "prompt" : "Full Name"}, marshallCjData(cj)[0]));
-			//assert.ok( _.isEqual({"name" : "email", "value" : "J@Doe", "prompt" : "Email"}, marshallCjData(cj)[1]));
-
-		})
-
-	})
-
-})
+//describe('marshallCjData', function(){
+//	describe('when given valid CJ with 0 items', function() {
+//		var cj = { "collection" :
+//		{
+//			"version" : "1.0",
+//			"href" : "http://example.org/friends/",
+//
+//			"items" : [
+//			]
+//		}
+//		}
+//		it('should return empty array', function() {
+//			assert.ok(_.isEqual([], marshallCjData(cj)));
+//		})
+//	})
+//
+//	describe('when given valid CJ with 1 item and 1 data', function() {
+//		var cj = { "collection" :
+//		{
+//			"version" : "1.0",
+//			"href" : "http://example.org/friends/",
+//
+//			"items" : [
+//				{
+//					"href" : "http://example.org/friends/jdoe",
+//					"data" : [
+//						{"name" : "full-name", "value" : "J. Doe", "prompt" : "Full Name"},
+//					]
+//				}
+//			]
+//		}
+//		}
+//		it('should be able to extract the data', function(){
+//			assert.ok( _.isEqual({"name" : "full-name", "value" : "J. Doe", "prompt" : "Full Name"}, marshallCjData(cj)[0]));
+//
+//		})
+//
+//	})
+//
+//	describe('when given valid Cj with 1 items and 2 data', function() {
+//		var cj = { "collection" :
+//		{
+//			"version" : "1.0",
+//			"href" : "http://example.org/friends/",
+//
+//			"items" : [
+//				{
+//					"href" : "http://example.org/friends/jdoe",
+//					"data" : [
+//						{"name" : "full-name", "value" : "J. Doe", "prompt" : "Full Name"},
+//						{"name" : "email", "value" : "J@Doe", "prompt" : "Email"},
+//					],
+//				}
+//			]
+//		}
+//		}
+//		it('should extract 2 sets of data', function() {
+//			assert.equal(marshallCjData(cj).length, 2);
+//			assert.ok( _.isEqual({"name" : "full-name", "value" : "J. Doe", "prompt" : "Full Name"}, marshallCjData(cj)[0]));
+//			assert.ok( _.isEqual({"name" : "email", "value" : "J@Doe", "prompt" : "Email"}, marshallCjData(cj)[1]));
+//
+//		})
+//
+//	})
+//
+//	describe('when given valid Cj with 2 items and 1 data set each', function() {
+//		var cj = { "collection" :
+//		{
+//			"version" : "1.0",
+//			"href" : "http://example.org/friends/",
+//
+//			"items" : [
+//				{
+//					"href" : "http://example.org/friends/jdoe",
+//					"data" : [
+//						{"name" : "full-name", "value" : "J. Doe", "prompt" : "Full Name"},
+//					],
+//				},
+//
+//				{
+//					"href" : "http://example.org/friends/johnlim",
+//					"data" : [
+//						{"name" : "full-name", "value" : "John Lim ", "prompt" : "Full Name"},
+//					],
+//				}
+//			]
+//		}
+//		}
+//		it('should extract 2 sets of items', function() {
+//			assert.equal(marshallCjItems(cj).length, 2);
+//			//assert.ok( _.isEqual({"name" : "full-name", "value" : "J. Doe", "prompt" : "Full Name"}, marshallCjData(cj)[0]));
+//			//assert.ok( _.isEqual({"name" : "email", "value" : "J@Doe", "prompt" : "Email"}, marshallCjData(cj)[1]));
+//
+//		})
+//
+//	})
+//
+//})
 
 describe('Convert', function() {
 	it('should return key value pair', function(){
-		var cj =  [{"name" : "Current", "value" : false, "prompt" : "Current"}];
+		var cj =  [[{"name" : "Current", "value" : false, "prompt" : "Current"}]];
 		//assert.equal({Current: false, "Effective Date" :'2014/12/01', Position: 'President', By: 'Richard Hatton', Updated: "2014/12/01" }, convert(cj));
 //            assert.ok(false);
 //            assert.ok( _.isEqual({name: "Current", value: false}, convert(cj)));
-		assert.ok( _.isEqual({Current: false}, convert(cj)));
-//            assert.equal({Current: false}, convert(cj));
+		assert.ok( _.isEqual([{Current: false}], convert(cj)));
+            //assert.equal([{Current: false}], convert(cj));
 	})
 })
 
@@ -200,7 +223,8 @@ describe('When given valid Cj with 1 item and 1 data', function() {
 		}
 		}
 
-		assert.ok(_.isEqual({"Current": false}, format(cj)));
+		assert.ok(_.isEqual([{"Current": false}], format(cj)));
+		//assert.equal([{"Current": false}], format(cj));
 	})
 })
 
@@ -223,7 +247,7 @@ describe('When given valid Cj with 1 item and 2 data', function() {
 		}
 		}
 
-		assert.ok(_.isEqual({"Current": false, "Effective Date": "2014/12/01" }, format(cj)));
+		assert.ok(_.isEqual([{"Current": false, "Effective Date": "2014/12/01" }], format(cj)));
 	})
 })
 
@@ -276,7 +300,7 @@ describe('When given valid Cj with 2 items and does not contain data child prope
 	})
 })
 
-describe.only('When given valid Cj with 2 items and 1 data each', function() {
+describe('When given valid Cj with 2 items and 1 data each', function() {
 	it('should return empty array', function(){
 		var cj = { "collection" :
 		{
@@ -301,10 +325,41 @@ describe.only('When given valid Cj with 2 items and 1 data each', function() {
 		}
 		}
 
-		//assert.ok(_.isEqual([{"Current": false}, {"Current": true}], format(cj)));
-		assert.equal([{"Current": false}, {"Current": true}], format(cj));
+		assert.ok(_.isEqual([{"Current": false}, {"Current": true}], format(cj)));
+		//assert.equal([{"Current": false}, {"Current": true}], format(cj));
+	})
+});
+
+describe(" asdfasdf marshallCjData", function() {
+	it('should return expected', function() {
+		var cj = { "collection" :
+		{
+			"version" : "1.0",
+			"href" : "http://example.org/friends/",
+			"items" : [
+				{
+					"href" : "http://example.org/friends/jdoe",
+					"data" : [
+						{"name" : "Current", "value" : false, "prompt" : "Current"},
+					],
+					"links" : [ ]
+				},
+				{
+					"href" : "http://example.org/friends/jdoe",
+					"data" : [
+						{"name" : "Current", "value" : true, "prompt" : "Current"}
+					],
+					"links" : [ ]
+				}
+			]
+		}
+		}
+		//assert.equal([[{"name" : "Current", "value" : false, "prompt" : "Current"}], [{"name" : "Current", "value" : true, "prompt" : "Current"}]], marshallCjData(cj));
+		assert.ok(_.isEqual([[{"name" : "Current", "value" : false, "prompt" : "Current"}], [{"name" : "Current", "value" : true, "prompt" : "Current"}]], marshallCjData(cj)));
+
 	})
 })
+
 /*
  "data" : [
  {"name" : "Current", "value" : false, "prompt" : "Current"},
