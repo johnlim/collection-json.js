@@ -1,5 +1,5 @@
-var assert = require("assert")
-var _ = require("underscore")
+var assert = require("assert");
+var _ = require("underscore");
 
 var extracto = function(dataSet) {
 	var data = {};
@@ -12,23 +12,13 @@ var extracto = function(dataSet) {
 	return data;
 };
 
-
 var convert = function(dataArray){
 	var john = [];
-	var data = {};
 	for (var i = 0; i < dataArray.length; i++){
-		//for (var j = 0; j < dataArray[i].length; j++) {
-		//	var x = _.omit(dataArray[i][j], 'prompt');
-		//	var key = x["name"];
-		//	var value = x["value"];
-		//	data[key] = value;
-		data = extracto(dataArray[i]);
-		//}
-		john.push(data);
+		john.push(extracto(dataArray[i]));
 	}
-	//return data;
 	return john;
-}
+};
 
 var marshallCjItems = function(cj) {
 	var itemArray = cj["collection"]["items"];
@@ -166,27 +156,23 @@ var format = function(cj) {
 //})
 
 describe('Convert', function() {
+	var cj =  [[{"name" : "Current", "value" : false, "prompt" : "Current"}]];
 	it('should return key value pair', function(){
-		var cj =  [[{"name" : "Current", "value" : false, "prompt" : "Current"}]];
-		//assert.equal({Current: false, "Effective Date" :'2014/12/01', Position: 'President', By: 'Richard Hatton', Updated: "2014/12/01" }, convert(cj));
-//            assert.ok(false);
-//            assert.ok( _.isEqual({name: "Current", value: false}, convert(cj)));
 		assert.ok( _.isEqual([{Current: false}], convert(cj)));
-            //assert.equal([{Current: false}], convert(cj));
 	})
-})
+});
 
 describe('When given valid Cj with no items child property', function() {
 	var cj = { "collection" :
 	{
 		"version" : "1.0",
-		"href" : "http://example.org/friends/",
+		"href" : "http://example.org/friends/"
 	}
-	}
+	};
 	it('format returns empty array', function() {
 		assert.ok(_.isEqual([],format(cj)));
 	})
-})
+});
 
 describe('When given valid Cj with 1 items and no data child property', function() {
 	var cj = { "collection" :
@@ -199,166 +185,157 @@ describe('When given valid Cj with 1 items and no data child property', function
 			}
 		]
 	}
-	}
+	};
 	it('format returns empty array', function() {
 		assert.ok(_.isEqual([],format(cj)));
 	})
-})
+});
 
 describe('When given valid Cj with 1 item and 1 data', function() {
+	var cj = { "collection" :
+	{
+		"version" : "1.0",
+		"href" : "http://example.org/friends/",
+		"items" : [
+			{
+				"href" : "http://example.org/friends/jdoe",
+				"data" : [
+					{"name" : "Current", "value" : false, "prompt" : "Current"}
+				],
+				"links" : [ ]
+			}
+		]
+	}
+	};
 	it('should return key value pair', function(){
-		var cj = { "collection" :
-		{
-			"version" : "1.0",
-			"href" : "http://example.org/friends/",
-			"items" : [
-				{
-					"href" : "http://example.org/friends/jdoe",
-					"data" : [
-						{"name" : "Current", "value" : false, "prompt" : "Current"}
-					],
-					"links" : [ ]
-				}
-			]
-		}
-		}
-
 		assert.ok(_.isEqual([{"Current": false}], format(cj)));
-		//assert.equal([{"Current": false}], format(cj));
 	})
-})
+});
 
 describe('When given valid Cj with 1 item and 2 data', function() {
+	var cj = { "collection" :
+	{
+		"version" : "1.0",
+		"href" : "http://example.org/friends/",
+		"items" : [
+			{
+				"href" : "http://example.org/friends/jdoe",
+				"data" : [
+					{"name" : "Current", "value" : false, "prompt" : "Current"},
+					{"name" : "Effective Date", "value": "2014/12/01", "prompt" : "Effective Date"}
+				],
+				"links" : [ ]
+			}
+		]
+	}
+	};
 	it('should return key value pair', function(){
-		var cj = { "collection" :
-		{
-			"version" : "1.0",
-			"href" : "http://example.org/friends/",
-			"items" : [
-				{
-					"href" : "http://example.org/friends/jdoe",
-					"data" : [
-						{"name" : "Current", "value" : false, "prompt" : "Current"},
-						{"name" : "Effective Date", "value": "2014/12/01", "prompt" : "Effective Date"}
-					],
-					"links" : [ ]
-				}
-			]
-		}
-		}
-
 		assert.ok(_.isEqual([{"Current": false, "Effective Date": "2014/12/01" }], format(cj)));
 	})
-})
+});
 
 describe('When given valid Cj with 2 items and 0 data', function() {
+	var cj = { "collection" :
+	{
+		"version" : "1.0",
+		"href" : "http://example.org/friends/",
+		"items" : [
+			{
+				"href" : "http://example.org/friends/jdoe",
+				"links" : [ ]
+			},
+			{
+				"href" : "uri",
+				"links" : [ ]
+			}
+		]
+	}
+	};
 	it('should return empty array', function(){
-		var cj = { "collection" :
-		{
-			"version" : "1.0",
-			"href" : "http://example.org/friends/",
-			"items" : [
-				{
-					"href" : "http://example.org/friends/jdoe",
-					"links" : [ ]
-				},
-				{
-					"href" : "uri",
-					"links" : [ ]
-				}
-			]
-		}
-		}
-
 		assert.ok(_.isEqual([], format(cj)));
 	})
-})
+});
 
 describe('When given valid Cj with 2 items and does not contain data child property in all items', function() {
+	var cj = { "collection" :
+	{
+		"version" : "1.0",
+		"href" : "http://example.org/friends/",
+		"items" : [
+			{
+				"href" : "http://example.org/friends/jdoe",
+				"data" : [
+					{"name" : "Current", "value" : false, "prompt" : "Current"}
+				],
+				"links" : [ ]
+			},
+			{
+				"href" : "http://example.org/friends/jdoe",
+				"links" : [ ]
+			}
+		]
+	}
+	};
 	it('should return empty array', function(){
-		var cj = { "collection" :
-		{
-			"version" : "1.0",
-			"href" : "http://example.org/friends/",
-			"items" : [
-				{
-					"href" : "http://example.org/friends/jdoe",
-					"data" : [
-						{"name" : "Current", "value" : false, "prompt" : "Current"}
-					],
-					"links" : [ ]
-				},
-				{
-					"href" : "http://example.org/friends/jdoe",
-					"links" : [ ]
-				}
-			]
-		}
-		}
-
 		assert.ok(_.isEqual([], format(cj)));
 	})
-})
+});
 
 describe('When given valid Cj with 2 items and 1 data each', function() {
-	it('should return empty array', function(){
-		var cj = { "collection" :
-		{
-			"version" : "1.0",
-			"href" : "http://example.org/friends/",
-			"items" : [
-				{
-					"href" : "http://example.org/friends/jdoe",
-					"data" : [
-						{"name" : "Current", "value" : false, "prompt" : "Current"}
-					],
-					"links" : [ ]
-				},
-				{
-					"href" : "http://example.org/friends/jdoe",
-					"data" : [
-						{"name" : "Current", "value" : true, "prompt" : "Current"}
-					],
-					"links" : [ ]
-				}
-			]
-		}
-		}
-
+	var cj = { "collection" :
+	{
+		"version" : "1.0",
+		"href" : "http://example.org/friends/",
+		"items" : [
+			{
+				"href" : "http://example.org/friends/jdoe",
+				"data" : [
+					{"name" : "Current", "value" : false, "prompt" : "Current"}
+				],
+				"links" : [ ]
+			},
+			{
+				"href" : "http://example.org/friends/jdoe",
+				"data" : [
+					{"name" : "Current", "value" : true, "prompt" : "Current"}
+				],
+				"links" : [ ]
+			}
+		]
+	}
+	};
+	it('should return array with 2 sets of data with 1 key/value pair each', function(){
 		assert.ok(_.isEqual([{"Current": false}, {"Current": true}], format(cj)));
-		//assert.equal([{"Current": false}, {"Current": true}], format(cj));
 	})
 });
 
 describe(" asdfasdf marshallCjData", function() {
+	var cj = { "collection" :
+	{
+		"version" : "1.0",
+		"href" : "http://example.org/friends/",
+		"items" : [
+			{
+				"href" : "http://example.org/friends/jdoe",
+				"data" : [
+					{"name" : "Current", "value" : false, "prompt" : "Current"}
+				],
+				"links" : [ ]
+			},
+			{
+				"href" : "http://example.org/friends/jdoe",
+				"data" : [
+					{"name" : "Current", "value" : true, "prompt" : "Current"}
+				],
+				"links" : [ ]
+			}
+		]
+	}
+	};
 	it('should return expected', function() {
-		var cj = { "collection" :
-		{
-			"version" : "1.0",
-			"href" : "http://example.org/friends/",
-			"items" : [
-				{
-					"href" : "http://example.org/friends/jdoe",
-					"data" : [
-						{"name" : "Current", "value" : false, "prompt" : "Current"},
-					],
-					"links" : [ ]
-				},
-				{
-					"href" : "http://example.org/friends/jdoe",
-					"data" : [
-						{"name" : "Current", "value" : true, "prompt" : "Current"}
-					],
-					"links" : [ ]
-				}
-			]
-		}
-		}
-		//assert.equal([[{"name" : "Current", "value" : false, "prompt" : "Current"}], [{"name" : "Current", "value" : true, "prompt" : "Current"}]], marshallCjData(cj));
 		assert.ok(_.isEqual([[{"name" : "Current", "value" : false, "prompt" : "Current"}], [{"name" : "Current", "value" : true, "prompt" : "Current"}]], marshallCjData(cj)));
-
 	})
-})
+});
 
 /*
  "data" : [
