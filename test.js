@@ -255,6 +255,36 @@ describe('getData', function(){
 			assert.ok(_.isEqual([{"Current": false}, {"Current": true}], marshallCjData(cj)));
 		})
 	});
+
+	describe('When given valid Cj with 2 items and 2 data each', function() {
+		var cj = { "collection" :
+		{
+			"version" : "1.0",
+			"href" : "http://example.org/friends/",
+			"items" : [
+				{
+					"href" : "http://example.org/friends/jdoe",
+					"data" : [
+						{"name" : "Current", "value" : false, "prompt" : "Current"},
+						{"name" : "Effective Date", "value" : "2014/1/1", "prompt" : "With Effect From"}
+					],
+					"links" : [ ]
+				},
+				{
+					"href" : "http://example.org/friends/jdoe",
+					"data" : [
+						{"name" : "Current", "value" : true, "prompt" : "Current"},
+						{"name" : "Effective Date", "value" : "2015/5/5", "prompt" : "With Effect From"}
+					],
+					"links" : [ ]
+				}
+			]
+		}
+		};
+		it('should return array with 2 sets of data with 1 key/value pair each', function(){
+			assert.ok(_.isEqual([{"Current": false, "Effective Date": "2014/1/1"}, {"Current": true, "Effective Date": "2015/5/5"}], marshallCjData(cj)));
+		})
+	});
 });
 
 
