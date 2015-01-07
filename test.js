@@ -107,8 +107,8 @@ describe('Convert', function() {
 		assert.ok( _.isEqual([{Current: false}], formatData(cj)));
 	})
 });
-describe('getData', function(){
 
+describe('marshallCjData', function(){
 	describe('When given valid Cj with no items child property', function() {
 		var cj = { "collection" :
 		{
