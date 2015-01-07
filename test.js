@@ -286,21 +286,3 @@ describe('getData', function(){
 		})
 	});
 });
-
-
-/*
- "data" : [
- {"name" : "Current", "value" : false, "prompt" : "Current"},
- {"name" : "Effective Date", "value" : "2014/12/01", "prompt" : "Effective Date"},
- {"name" : "Position", "value" : "President", "prompt" : "Position"},
- {"name" : "By", "value" : "Richard Hatton", "prompt" : "By"},
- {"name" : "Updated", "value" : "2014/12/01", "prompt" : "Updated"}
- ],
-
- [{Current: false, Effective Date:'2014/12/01', Position: 'President', By: 'Richard Hatton', Updated: ""2014/12/01 },
- {name:'Mary', phone:'555-9876', age:19},
- {name:'Mike', phone:'555-4321', age:21},
- {name:'Adam', phone:'555-5678', age:35},
- {name:'Julie', phone:'555-8765', age:29}
- ];
- */
