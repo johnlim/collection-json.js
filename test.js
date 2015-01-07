@@ -25,7 +25,7 @@ var marshallCjItems = function(cj) {
 	return itemArray;
 }
 
-var extract = function(items) {
+var extractItems = function(items) {
 	var dataArray = [];
 	for (var j = 0; j < items["data"].length; j++) {
 		dataArray[j] = items["data"][j];
@@ -38,7 +38,7 @@ var marshallCjData = function(cj) {
 	var items = cj["collection"]["items"];
 	try {
 			for (var i = 0; i < items.length; i++) {
-				dataArray.push(extract(items[i]));
+				dataArray.push(extractItems(items[i]));
 			}
 	}
 	catch(err) {
@@ -66,11 +66,11 @@ describe('marshallCjData', function(){
 			"items" : [
 			]
 		}
-		}
+		};
 		it('should return empty array', function() {
 			assert.ok(_.isEqual([], marshallCjData(cj)));
 		})
-	})
+	});
 //
 //	describe('when given valid CJ with 1 item and 1 data', function() {
 //		var cj = { "collection" :
