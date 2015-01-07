@@ -1,10 +1,10 @@
 var assert = require("assert");
 var _ = require("underscore");
 
-var extracto = function(dataSet) {
+var transformDataIntoKeyValue = function(dataArray) {
 	var data = {};
-	for (var j = 0; j < dataSet.length; j++) {
-		var x = _.omit(dataSet[j], 'prompt');
+	for (var j = 0; j < dataArray.length; j++) {
+		var x = _.omit(dataArray[j], 'prompt');
 		var key = x["name"];
 		var value = x["value"];
 		data[key] = value;
@@ -12,12 +12,12 @@ var extracto = function(dataSet) {
 	return data;
 };
 
-var convert = function(dataArray){
-	var john = [];
+var formatData = function(dataArray){
+	var formattedData = [];
 	for (var i = 0; i < dataArray.length; i++){
-		john.push(extracto(dataArray[i]));
+		formattedData.push(transformDataIntoKeyValue(dataArray[i]));
 	}
-	return john;
+	return formattedData;
 };
 
 var marshallCjItems = function(cj) {
@@ -25,7 +25,7 @@ var marshallCjItems = function(cj) {
 	return itemArray;
 }
 
-var extractItems = function(items) {
+var extractData = function(items) {
 	var dataArray = [];
 	for (var j = 0; j < items["data"].length; j++) {
 		dataArray[j] = items["data"][j];
@@ -33,12 +33,12 @@ var extractItems = function(items) {
 	return dataArray;
 };
 
-var marshallCjData = function(cj) {
+var getData = function(cj) {
 	var dataArray = [];
 	var items = cj["collection"]["items"];
 	try {
 			for (var i = 0; i < items.length; i++) {
-				dataArray.push(extractItems(items[i]));
+				dataArray.push(extractData(items[i]));
 			}
 	}
 	catch(err) {
@@ -47,16 +47,16 @@ var marshallCjData = function(cj) {
 	return dataArray;
 };
 
-var format = function(cj) {
-	var extract = marshallCjData(cj);
+var marshallCjData = function(cj) {
+	var data= getData(cj);
 
-	if (extract.length > 0) {
-		return convert(extract);
+	if (data.length > 0) {
+		return formatData(data);
 	}
-	return extract;
+	return data;
 }
 
-describe('marshallCjData', function(){
+describe('getData', function(){
 	describe('when given valid CJ with 0 items', function() {
 		var cj = { "collection" :
 		{
@@ -68,7 +68,7 @@ describe('marshallCjData', function(){
 		}
 		};
 		it('should return empty array', function() {
-			assert.ok(_.isEqual([], marshallCjData(cj)));
+			assert.ok(_.isEqual([], getData(cj)));
 		})
 	});
 //
@@ -89,7 +89,7 @@ describe('marshallCjData', function(){
 //		}
 //		}
 //		it('should be able to extract the data', function(){
-//			assert.ok( _.isEqual({"name" : "full-name", "value" : "J. Doe", "prompt" : "Full Name"}, marshallCjData(cj)[0]));
+//			assert.ok( _.isEqual({"name" : "full-name", "value" : "J. Doe", "prompt" : "Full Name"}, getData(cj)[0]));
 //
 //		})
 //
@@ -113,9 +113,9 @@ describe('marshallCjData', function(){
 //		}
 //		}
 //		it('should extract 2 sets of data', function() {
-//			assert.equal(marshallCjData(cj).length, 2);
-//			assert.ok( _.isEqual({"name" : "full-name", "value" : "J. Doe", "prompt" : "Full Name"}, marshallCjData(cj)[0]));
-//			assert.ok( _.isEqual({"name" : "email", "value" : "J@Doe", "prompt" : "Email"}, marshallCjData(cj)[1]));
+//			assert.equal(getData(cj).length, 2);
+//			assert.ok( _.isEqual({"name" : "full-name", "value" : "J. Doe", "prompt" : "Full Name"}, getData(cj)[0]));
+//			assert.ok( _.isEqual({"name" : "email", "value" : "J@Doe", "prompt" : "Email"}, getData(cj)[1]));
 //
 //		})
 //
@@ -146,8 +146,8 @@ describe('marshallCjData', function(){
 //		}
 //		it('should extract 2 sets of items', function() {
 //			assert.equal(marshallCjItems(cj).length, 2);
-//			//assert.ok( _.isEqual({"name" : "full-name", "value" : "J. Doe", "prompt" : "Full Name"}, marshallCjData(cj)[0]));
-//			//assert.ok( _.isEqual({"name" : "email", "value" : "J@Doe", "prompt" : "Email"}, marshallCjData(cj)[1]));
+//			//assert.ok( _.isEqual({"name" : "full-name", "value" : "J. Doe", "prompt" : "Full Name"}, getData(cj)[0]));
+//			//assert.ok( _.isEqual({"name" : "email", "value" : "J@Doe", "prompt" : "Email"}, getData(cj)[1]));
 //
 //		})
 //
@@ -158,7 +158,7 @@ describe('marshallCjData', function(){
 describe('Convert', function() {
 	var cj =  [[{"name" : "Current", "value" : false, "prompt" : "Current"}]];
 	it('should return key value pair', function(){
-		assert.ok( _.isEqual([{Current: false}], convert(cj)));
+		assert.ok( _.isEqual([{Current: false}], formatData(cj)));
 	})
 });
 
@@ -170,7 +170,7 @@ describe('When given valid Cj with no items child property', function() {
 	}
 	};
 	it('format returns empty array', function() {
-		assert.ok(_.isEqual([],format(cj)));
+		assert.ok(_.isEqual([],marshallCjData(cj)));
 	})
 });
 
@@ -187,7 +187,7 @@ describe('When given valid Cj with 1 items and no data child property', function
 	}
 	};
 	it('format returns empty array', function() {
-		assert.ok(_.isEqual([],format(cj)));
+		assert.ok(_.isEqual([],marshallCjData(cj)));
 	})
 });
 
@@ -208,7 +208,7 @@ describe('When given valid Cj with 1 item and 1 data', function() {
 	}
 	};
 	it('should return key value pair', function(){
-		assert.ok(_.isEqual([{"Current": false}], format(cj)));
+		assert.ok(_.isEqual([{"Current": false}], marshallCjData(cj)));
 	})
 });
 
@@ -230,7 +230,7 @@ describe('When given valid Cj with 1 item and 2 data', function() {
 	}
 	};
 	it('should return key value pair', function(){
-		assert.ok(_.isEqual([{"Current": false, "Effective Date": "2014/12/01" }], format(cj)));
+		assert.ok(_.isEqual([{"Current": false, "Effective Date": "2014/12/01" }], marshallCjData(cj)));
 	})
 });
 
@@ -252,7 +252,7 @@ describe('When given valid Cj with 2 items and 0 data', function() {
 	}
 	};
 	it('should return empty array', function(){
-		assert.ok(_.isEqual([], format(cj)));
+		assert.ok(_.isEqual([], marshallCjData(cj)));
 	})
 });
 
@@ -277,7 +277,7 @@ describe('When given valid Cj with 2 items and does not contain data child prope
 	}
 	};
 	it('should return empty array', function(){
-		assert.ok(_.isEqual([], format(cj)));
+		assert.ok(_.isEqual([], marshallCjData(cj)));
 	})
 });
 
@@ -305,11 +305,11 @@ describe('When given valid Cj with 2 items and 1 data each', function() {
 	}
 	};
 	it('should return array with 2 sets of data with 1 key/value pair each', function(){
-		assert.ok(_.isEqual([{"Current": false}, {"Current": true}], format(cj)));
+		assert.ok(_.isEqual([{"Current": false}, {"Current": true}], marshallCjData(cj)));
 	})
 });
 
-describe(" asdfasdf marshallCjData", function() {
+describe(" asdfasdf getData", function() {
 	var cj = { "collection" :
 	{
 		"version" : "1.0",
@@ -333,7 +333,7 @@ describe(" asdfasdf marshallCjData", function() {
 	}
 	};
 	it('should return expected', function() {
-		assert.ok(_.isEqual([[{"name" : "Current", "value" : false, "prompt" : "Current"}], [{"name" : "Current", "value" : true, "prompt" : "Current"}]], marshallCjData(cj)));
+		assert.ok(_.isEqual([[{"name" : "Current", "value" : false, "prompt" : "Current"}], [{"name" : "Current", "value" : true, "prompt" : "Current"}]], getData(cj)));
 	})
 });
 
