@@ -56,22 +56,6 @@ var format = function(cj) {
 	return extract;
 }
 
-//describe('marshallCjData', function(){
-//	describe('when given valid CJ with 0 items', function() {
-//		var cj = { "collection" :
-//		{
-//			"version" : "1.0",
-//			"href" : "http://example.org/friends/",
-//
-//			"items" : [
-//			]
-//		}
-//		}
-//		it('should return empty array', function() {
-//			assert.ok(_.isEqual([], marshallCjData(cj)));
-//		})
-//	})
-//
 //	describe('when given valid CJ with 1 item and 1 data', function() {
 //		var cj = { "collection" :
 //		{
